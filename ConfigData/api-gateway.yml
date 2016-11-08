@@ -1,4 +1,4 @@
 server:
-  port: 8050
+  port: 8051
 zuul:
   sensitive-headers: Cookie, Set-Cookie
