@@ -1,2 +1,4 @@
-server.port=8050
-zuul.sensitive-headers=Cookie, Set-Cookie
+server:
+  port: 8050
+zuul:
+  sensitive-headers: Cookie, Set-Cookie
