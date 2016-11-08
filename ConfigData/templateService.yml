@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: tempalte-service
+  profiles:
+    active: dev,mysql
