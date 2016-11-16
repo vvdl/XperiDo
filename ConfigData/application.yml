@@ -1,9 +1,6 @@
 message: 'Say Hallo'
 
- eureka:
+eureka:
     client:
       serviceUrl:
        defaultZone: https://xd-discovery-server.herokuapp.com/eureka/
-   instance:
-     status-page-url-path: /rest/info
-     health-check-url-path: /rest/health
