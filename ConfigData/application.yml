@@ -1,18 +1,9 @@
 message: 'Say Hallo'
 
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: ${EUREKA_URL:http://user:password@localhost:5000}/eureka/
-security:
-  user:
-    password: ${eureka.password}
-
----
-spring:
-  profiles: heroku
-eureka:
-  instance:
-    hostname: ${DOMAIN_NAME}
-    nonSecurePort: 80
-  password: ${USER_PASSWORD:password}
+ eureka:
+    client:
+      serviceUrl:
+       defaultZone: https://xd-discovery-server.herokuapp.com/eureka/
+   instance:
+     status-page-url-path: /rest/info
+     health-check-url-path: /rest/health
