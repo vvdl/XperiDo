@@ -1,6 +1,17 @@
-message: 'Say Hallo'
 
+---
+spring:
+    profiles: default
+
+message: 'Say Hallo default'
+    
 eureka:
     client:
       serviceUrl:
        defaultZone: https://xd-discovery-server.herokuapp.com/eureka/
+
+---
+spring:
+    profiles: local
+
+message: 'Say Hallo local'
