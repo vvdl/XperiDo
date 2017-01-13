@@ -27,11 +27,13 @@ consumes:
 produces:
   - application/json
   
-
 # ----------------------------------------------------------------
 # Path defintion
 # ----------------------------------------------------------------
 paths: 
+
+  # User
+  # ======================================================================
 
   /users/:
     get:
@@ -129,8 +131,6 @@ paths:
         204:
           description: OK
 
-
-
   /users/{userId}/password:
     put:
       description: change user password
@@ -219,7 +219,6 @@ paths:
           description: Unable to process request.
           schema:
             $ref: '#/definitions/Error'
-
 
   /users/{userId}/permissions:
     get:
@@ -327,10 +326,415 @@ paths:
       responses:
         200:
           description: OK
+          
+          
+  /users/{userId}/permissions/{applicationId}/project/{projectId}:
+    get:
+      description: get user permissions
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string
+        - name: userId
+          in: path
+          description: user reference
+          type: string
+          required: true
+        - name: applicationId
+          in: path
+          description: application reference
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          description: project reference
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ApplicationPermission"              
 
+    put:
+      description: get user permissions
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string
+        - name: userId
+          in: path
+          description: user reference
+          type: string
+          required: true
+        - name: applicationId
+          in: path
+          description: application reference
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          description: project reference
+          type: string
+          required: true
+        - name: applicationPermission
+          in: body
+          description: application permission definition
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/AuthKey"              
+          required: true
+      responses:
+        200:
+          description: OK
 
-  /connections/{appicationId}/login:
+    delete:
+      description: remove application user permission
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string
+        - name: userId
+          in: path
+          description: user reference
+          type: string
+          required: true
+        - name: applicationId
+          in: path
+          description: application reference
+          type: string
+          required: true
+        - name: projectId
+          in: path
+          description: project reference
+          type: string
+          required: true
+        - name: applicationPermission
+          in: body
+          description: application permission definition
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/AuthKey"              
+          required: true
+      responses:
+        200:
+          description: OK        
+          
+  # Application
+  # ======================================================================
+  /application:
+    get:
+      summary: Retrieve registered applications
+      description: |
+        > Retrieve registered applications
+      operationId: getRegisteredApplications
+      produces: 
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Basic base64(user:password)"
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Application'
+        400:
+          description: Unable to process request.
+          schema:
+            $ref: '#/definitions/Error'
+            
     post:
+      summary: Register application
+      description: |
+        > Register application
+      operationId: registerApplication
+      produces: 
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Basic base64(user:password)"
+          required: true
+          type: string
+        - name: application
+          in: body
+          description: Application to register
+          required: true
+          schema:
+            $ref: '#/definitions/Application'
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Application'
+        400:
+          description: Unable to process request.
+          schema:
+            $ref: '#/definitions/Error'            
+
+  /application/{applicationId}/:
+    put:
+      summary: Update application
+      description: |
+        > Register application
+      operationId: updateApplication
+      produces: 
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Basic base64(user:password)"
+          required: true
+          type: string
+        - name: applicationId
+          in: path
+          description: reference id of the application to update
+          required: true
+          type: string          
+        - name: application
+          in: body
+          description: Application details to update
+          required: true
+          schema:
+            $ref: '#/definitions/Application'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Unable to process request.
+          schema:
+            $ref: '#/definitions/Error'       
+
+    get:
+      summary: Get application details
+      description: |
+        > Register application
+      operationId: getpplication
+      produces: 
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Basic base64(user:password)"
+          required: true
+          type: string
+        - name: applicationId
+          in: path
+          description: reference id of the application to update
+          required: true
+          type: string          
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Application'
+        400:
+          description: Unable to process request.
+          schema:
+            $ref: '#/definitions/Error'       
+
+    delete:
+      summary: Delete application
+      description: |
+        > Delete application
+      operationId: deleteApplication
+      produces: 
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Basic base64(user:password)"
+          required: true
+          type: string
+        - name: applicationId
+          in: path
+          description: reference id of the application to update
+          required: true
+          type: string          
+      responses:
+        200:
+          description: OK
+        400:
+          description: Unable to process request.
+          schema:
+            $ref: '#/definitions/Error'       
+
+  /application/{applicationId}/projects:
+    get:
+      summary: Get application projects
+      description: |
+        > Get application projects
+      operationId: getApplicationProjects
+      produces: 
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string
+        - name: applicationId
+          in: path
+          description: reference id of the application to update
+          required: true
+          type: string          
+      responses:
+        200:
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Project'
+        400:
+          description: Unable to process request.
+          schema:
+            $ref: '#/definitions/Error'       
+
+  /application/{applicationId}/projects/{projectId}:
+    get:
+      summary: Get application project
+      description: |
+        > Get application project
+      operationId: getApplicationProject
+      produces: 
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string
+        - name: applicationId
+          in: path
+          description: reference id of the application
+          required: true
+          type: string          
+        - name: projectId
+          in: path
+          description: reference id of the project
+          required: true
+          type: string          
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Project'
+        400:
+          description: Unable to process request.
+          schema:
+            $ref: '#/definitions/Error'       
+
+
+  /application/{applicationId}/projects/{projectId}/authorization:
+    get:
+      summary: Get application project authorization keys
+      description: |
+        > Get application project authorization keys
+      operationId: getApplicationProjectAuthorizationKeys
+      produces: 
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string
+        - name: applicationId
+          in: path
+          description: reference id of the application
+          required: true
+          type: string          
+        - name: projectId
+          in: path
+          description: reference id of the project
+          required: true
+          type: string          
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AuthKey'
+        400:
+          description: Unable to process request.
+          schema:
+            $ref: '#/definitions/Error'       
+
+  /application/{applicationId}/projects/{projectId}/authorization/{authKey}:
+    get:
+      summary: Get application project authorization key
+      description: |
+        > Get application project authorization key
+      operationId: getApplicationProjectAuthorizationKey
+      produces: 
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string
+        - name: applicationId
+          in: path
+          description: reference id of the application
+          required: true
+          type: string          
+        - name: projectId
+          in: path
+          description: reference id of the project
+          required: true
+          type: string          
+        - name: authKey
+          in: path
+          description: authKey value
+          required: true
+          type: string          
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AuthKey'
+        400:
+          description: Unable to process request.
+          schema:
+            $ref: '#/definitions/Error'       
+
+
+  /application/{appicationId}/login:
+    get:
       summary: create new connection
       description: |
         > Create new connection with basic authentication
@@ -344,37 +748,27 @@ paths:
           in: header
           description: Token receieved via authentication. Format "Basic base64(user:password)"
           required: true
-          type: string      
-        - name: applicationId
-          in: path
-          description: application
-          required: false
           type: string
+        - name: appicationId
+          in: path
+          description: user reference
+          type: string
+          required: true
         - name: projectId
           in: query
-          description: application project 
-          required: false
+          description: project reference
           type: string
+          required: true
       responses:
         200:
           description: OK
           schema:
-            type: object
-            properties:
-              status:
-                type: number
-                title: success
-              token:
-                schema:
-                  $ref: '#/definitions/ApplicationToken'
+            $ref: '#/definitions/ApplicationToken'
         400:
           description: Unable to process request.
           schema:
             $ref: '#/definitions/Error'
-    
 
-
-  
 # Object definitions
 # ----------------------------------------------------------------
 definitions:
@@ -450,6 +844,38 @@ definitions:
       expiredAt:
         type: number
         title: token expiration date
+        
+  Application:
+    type: object
+    required:
+      - name
+    properties:
+      id: 
+        type: string
+        title: unique application reference
+      name: 
+        type: string
+        title: application name
+      description: 
+        type: string
+        title: description
+
+  Project:
+    type: object
+    required:
+      - name
+    properties:
+      id: 
+        type: string
+        title: unique project reference
+      name: 
+        type: string
+        title: project name
+      description: 
+        type: string
+        title: description
+        
+      
 
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
