@@ -1,0 +1,458 @@
+swagger: '2.0'
+info:
+  version: 0.1.1
+  title: Authentication Server
+  description: |
+    Authentication services to manage application and user access rights as part of projects. 
+    - **Users**
+
+    To create and manage users in the system
+    - **Applications**
+    
+    To create and manage applications and projects
+    - **Session**
+    
+    To setup and tear down a session and to obtain information about a specific session
+  contact:
+    name: Invenso
+    email: vincent.vanderlinden@invenso.com
+    url: www.invenso.com
+host: localhost
+basePath: /rest    
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+  
+
+# ----------------------------------------------------------------
+# Path defintion
+# ----------------------------------------------------------------
+paths: 
+
+  /users/:
+    get:
+      summary: Get all registered users
+      description: |
+        > Obtain an array of all users registered in the system. 
+      operationId: getAllUsers
+      produces: 
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string
+      responses:
+       '200':
+          description: OK
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                title: success
+              data:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/definitions/User'
+       '400':
+          description: Unable to process request.
+          schema:
+            $ref: '#/definitions/Error'
+
+  /users/{userId}:
+    get:
+      summary: retrieve user
+      description: get user details for given userId
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string      
+        - name: userId
+          in: path
+          description: userId to lookup
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/User'
+            
+    put:
+      summary: update user
+      description: get user details for given userId
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string      
+        - name: userId
+          in: path
+          description: userId to lookup
+          type: string
+          required: true
+        - name: user
+          in: body
+          description: information to update
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/User'
+
+    delete:
+      summary: delete user
+      description: remove user assign to the given id
+      parameters:
+        - name: userId
+          in: path
+          description: userId to lookup
+          type: string
+          required: true
+      responses:
+        204:
+          description: OK
+
+
+
+  /users/{userId}/password:
+    put:
+      description: change user password
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string
+        - name: userId
+          in: path
+          description: userId to lookup
+          type: string
+          required: true
+        - name: newPassword
+          in: body
+          description: new password
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+
+  /users/{userId}/reset:
+    put:
+      description: reset user password
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string
+        - name: userId
+          in: path
+          description: userId to reset
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+
+  /users/register:
+    post:
+      summary: Register new user
+      description: |
+        > Register a new user and optionally assign that user to an application or project.  
+      operationId: registerGlobalUser
+      produces: 
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: applicationId
+          in: query
+          description: assign user to application specified
+          required: false
+          type: string
+        - name: projectId
+          in: query
+          description: assign user to project specified
+          required: false
+          type: string
+        - name: userName
+          in: body
+          required: true
+          description: new user details.
+          schema:
+            $ref: '#/definitions/User'        
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              status:
+                type: number
+                title: success
+              data:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/definitions/User'
+        400:
+          description: Unable to process request.
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  /users/{userId}/permissions:
+    get:
+      description: get user permissions
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string
+        - name: userId
+          in: path
+          description: userId to reset
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ApplicationPermission"
+              
+  /users/{userId}/permissions/{applicationId}:
+    get:
+      description: get user permissions
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string
+        - name: userId
+          in: path
+          description: user reference
+          type: string
+          required: true
+        - name: applicationId
+          in: path
+          description: application reference
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ApplicationPermission"              
+
+    put:
+      description: get user permissions
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string
+        - name: userId
+          in: path
+          description: user reference
+          type: string
+          required: true
+        - name: applicationId
+          in: path
+          description: application reference
+          type: string
+          required: true
+        - name: applicationPermission
+          in: body
+          description: application permission definition
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/AuthKey"              
+          required: true
+      responses:
+        200:
+          description: OK
+
+    delete:
+      description: remove application user permission
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Bearer access_token"
+          required: true
+          type: string
+        - name: userId
+          in: path
+          description: user reference
+          type: string
+          required: true
+        - name: applicationId
+          in: path
+          description: application reference
+          type: string
+          required: true
+        - name: applicationPermission
+          in: body
+          description: application permission definition
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/AuthKey"              
+          required: true
+      responses:
+        200:
+          description: OK
+
+
+  /connections/{appicationId}/login:
+    post:
+      summary: create new connection
+      description: |
+        > Create new connection with basic authentication
+      operationId: performLogin
+      produces: 
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Token receieved via authentication. Format "Basic base64(user:password)"
+          required: true
+          type: string      
+        - name: applicationId
+          in: path
+          description: application
+          required: false
+          type: string
+        - name: projectId
+          in: query
+          description: application project 
+          required: false
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              status:
+                type: number
+                title: success
+              token:
+                schema:
+                  $ref: '#/definitions/ApplicationToken'
+        400:
+          description: Unable to process request.
+          schema:
+            $ref: '#/definitions/Error'
+    
+
+
+  
+# Object definitions
+# ----------------------------------------------------------------
+definitions:
+
+  Error:
+    type: object
+    properties:
+      status:
+        type: string
+        title: error
+      message:
+        type: string
+
+  User:
+    type: object
+    required:
+    - fullName
+    - email
+    properties:
+      id:
+        type: string
+        title: unique reference
+        format: uuid
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      fullName:
+        type: string
+        title: full name
+        format: string
+        example: Vincent Van der Linden
+      email:
+        type: string
+        title: valid email address
+        format: email
+        example: vincent.vanderlinden@invenso.com
+
+
+  ApplicationPermission:
+    type: object
+    required:
+      - applicationId
+      - authKeyList
+    properties:
+      applicationId:
+        type: string
+        title: application id
+      applicationName:
+        type: string
+        title: application name
+      authKeyList:
+        type: array
+        items:
+          $ref: "#/definitions/AuthKey"
+  
+  AuthKey:
+    type: object
+    required:
+      - value
+      - description
+    properties:
+      value:
+        type: string
+        title: key value
+      description:
+        type: string
+        title: key description
+
+  ApplicationToken:
+    type: object
+    properties:
+      token:
+        type: string
+        title: jwt token generated
+      expiredAt:
+        type: number
+        title: token expiration date
+
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /vvdl/AuthenticationServer/0.1
+schemes:
+ - https
