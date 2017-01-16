@@ -62,6 +62,7 @@ paths:
         200:
           description: OK
           schema:
+            type: array
             items:
               $ref: '#/definitions/User'
         400:
@@ -226,7 +227,7 @@ paths:
         - name: application_id
           in: path
           description: application reference
-          required: false
+          required: true
           type: string
         - name: user
           in: body
@@ -386,6 +387,7 @@ paths:
             $ref: '#/definitions/Error'
 
   /users/{user_id}/permissions/{application_id}/project/{project_id}:
+ 
     get:
       summary: get user project scope
       description: |
@@ -771,43 +773,44 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-      put:
-          summary: Update application authorization scope
-          description: |
-            > Update application authorization scope
-          operationId: set_application_authorization_scope
-          produces:
-            - application/json
-          consumes:
-            - application/json
-          parameters:
-            - name: Authorization
-              in: header
-              description: Token receieved via authentication. Format "Bearer access_token"
-              required: true
-              type: string
-            - name: application_id
-              in: path
-              description: reference id of the application
-              required: true
-              type: string
-            - name: application_scope
-              in: body
+    put:
+        summary: Update application authorization scope
+        description: |
+          > Update application authorization scope
+        operationId: set_application_authorization_scope
+        produces:
+          - application/json
+        consumes:
+          - application/json
+        parameters:
+          - name: Authorization
+            in: header
+            description: Token receieved via authentication. Format "Bearer access_token"
+            required: true
+            type: string
+          - name: application_id
+            in: path
+            description: reference id of the application
+            required: true
+            type: string
+          - name: application_scope
+            in: body
+            description: scoping keys to add
+            required: true
+            schema:
+              items:
+                $ref: '#/definitions/Authorization_key'
+        responses:
+          200:
+            description: OK
+            schema:
               type: array
-              schema:
-                items:
-                  $ref: '#/definitions/Authorization_key'
-          responses:
-            200:
-              description: OK
-              schema:
-                type: array
-                items:
-                  $ref: '#/definitions/Application'
-            400:
-              description: Unable to process request.
-              schema:
-                $ref: '#/definitions/Error'
+              items:
+                $ref: '#/definitions/Application'
+          400:
+            description: Unable to process request.
+            schema:
+              $ref: '#/definitions/Error'
 
   # Special services
   # ======================================================================
@@ -888,12 +891,14 @@ definitions:
       description:
         type: string
         title: description
-    authorization_scope:
-          items:
-            $ref: "#/definitions/Authorization_key"
-    project_list:
-          items:
-            $ref: "#/definitions/Project"
+      authorization_scope:
+        type: array
+        items:
+          $ref: "#/definitions/Authorization_key"
+      project_list:
+        type: array
+        items:
+          $ref: "#/definitions/Project"
 
 
   Feedback:
